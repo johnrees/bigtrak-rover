@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #000;
+    }
+    canvas {
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <canvas id="canvas" width="640" height="1136"></canvas>
+  <script type="text/javascript">
+    var socket = io();
+    var height = 1015;
+    var circleRadius = 74;
+    var circlePadding = 11;
+    var c=document.getElementById("canvas");
+    var ctx=c.getContext("2d");
+    var a = 22;
+    var circleX = (circleRadius + circlePadding);
+    ctx.fillStyle = 'white';
+
+    var states = {
+      STATIONARY: [0,0,0,0],
+      FORWARD: [0,1,1,0],
+      LEFT: [1,1,0,0],
+      RIGHT: [0,0,1,1],
+      BACKWARD: [1,0,0,1]
+    }
+
+    var state = states['STATIONARY'];
+
+    $(document).keydown(function(e) {
+      e.preventDefault();
+      socket.emit('move', { keyCode: e.keyCode });
+    });
+
+    socket.on('move', function(data){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      switch(data.keyCode) {
+        case 38:
+          state = states['FORWARD'];
+          ctx.arc(circleX * 3 - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          ctx.arc(circleX * 5 - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          break;
+        case 40:
+          state = states['BACKWARD'];
+          ctx.arc(circleX - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          ctx.arc(circleX * 7 - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          break;
+        case 37:
+          state = states['LEFT'];
+          ctx.arc(circleX * 5 - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          ctx.arc(circleX * 7 - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          break;
+        case 39:
+          state = states['RIGHT'];
+          ctx.arc(circleX - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          ctx.arc(circleX * 3 - a,height-circleRadius,circleRadius,0,2*Math.PI);
+          break;
+        default:
+          state = states['STATIONARY'];
+      }
+      ctx.fill();
+    });
+
+    socket.on('stop', function() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    })
+
+    $(document).keyup(function(e) {
+      e.preventDefault();
+      socket.emit('stop');
+    });
+
+  </script>
+</body>
+</html>
