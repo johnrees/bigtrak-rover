@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-	<style type="text/css">
+  <title>Bigtrak Rover</title>
+  <style type="text/css">
     * {
       margin: 0;
       padding: 0;
     }
     body {
       background: #000;
-    }
-    canvas {
     }
   </style>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -22,16 +20,6 @@
 <body>
   <canvas id="canvas" width="640" height="1136"></canvas>
   <script type="text/javascript">
-    var socket = io();
-    var height = 1015;
-    var circleRadius = 74;
-    var circlePadding = 11;
-    var c=document.getElementById("canvas");
-    var ctx=c.getContext("2d");
-    var a = 22;
-    var circleX = (circleRadius + circlePadding);
-    ctx.fillStyle = 'white';
-
     var states = {
       STATIONARY: [0,0,0,0],
       FORWARD: [0,1,1,0],
@@ -40,7 +28,17 @@
       BACKWARD: [1,0,0,1]
     }
 
-    var state = states['STATIONARY'];
+    var socket = io(),
+      height = 1015,
+      circleRadius = 74,
+      circlePadding = 11,
+      c=document.getElementById("canvas"),
+      ctx=c.getContext("2d"),
+      a = 22,
+      circleX = (circleRadius + circlePadding),
+      state = states['STATIONARY'];
+
+    ctx.fillStyle = 'white';
 
     $(document).keydown(function(e) {
       e.preventDefault();
@@ -85,7 +83,6 @@
       e.preventDefault();
       socket.emit('stop');
     });
-
   </script>
 </body>
 </html>
